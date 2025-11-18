@@ -2,20 +2,21 @@
 
 ## 🧪 Problem Description
 
-Breast cancer is one of the most common cancers worldwide.
-Early detection significantly improves patient survival rates, but diagnosis often requires time-consuming manual evaluation by medical specialists.
+Breast cancer is one of the most common cancers worldwide. Early detection significantly improves patient survival rates, but diagnosis often requires time-consuming manual evaluation by medical specialists.
 
 This project aims to build a machine learning classifier that automatically predicts whether a breast tumor is:
-	•	benign (non-cancerous)
-	•	malignant (cancerous)
+
+- benign (non-cancerous)
+- malignant (cancerous)
 
 using 30 numerical diagnostic features extracted from digitized breast imaging data.
 
 The goal is to provide a lightweight, reproducible, and portable decision-support tool that:
-	•	assists practitioners or automated systems in screening patients
-	•	speeds up diagnostic workflows
-	•	reduces manual workload
-	•	offers consistent prediction results across environments
+
+- assists practitioners or automated systems in screening patients
+- speeds up diagnostic workflows
+- reduces manual workload
+- offers consistent prediction results across environments
 
 The model and prediction pipeline can be executed directly on a local machine or inside a Docker container, ensuring portability and reproducibility.
 
@@ -47,6 +48,7 @@ breast-cancer-project/
 ├── requirements.txt         # dependencies
 └── Dockerfile               # container setup
 ```
+⸻
 
 ## 📊 Dataset
 
@@ -74,7 +76,7 @@ Target Variable:
 	•	M → malignant
 	•	B → benign
 
-
+⸻
 
 ## 📥 How to Download the Dataset
 
@@ -108,11 +110,7 @@ unzip breast-cancer-dataset.zip
 
 For evaluation and reproducibility, the dataset file breast-cancer.csv is already included directly in this repository, so reviewers do not need to download anything manually.
 
-
-
-
-
-
+⸻
 
 
 
