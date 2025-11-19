@@ -9,18 +9,32 @@ with open("model_rf.bin", "rb") as f:
     model = pickle.load(f)
 
 
+# -----------------------
+#   Health check route
+# -----------------------
+@app.route("/", methods=["GET"])
+def index():
+    return (
+        "Breast cancer prediction API is running. "
+        "Use POST /predict with JSON: {\"features\": [30 numbers]}",
+        200,
+    )
+
+
+# -----------------------
+#   Prediction route
+# -----------------------
 @app.route("/predict", methods=["GET", "POST"])
 def predict():
-    # GET: just show a simple help message (for browser)
+    # GET — show simple help message
     if request.method == "GET":
         return (
-            "Breast cancer prediction API is running. "
-            "Send a POST request with JSON like:<br>"
+            "Prediction endpoint. Send a POST request with JSON like:<br>"
             "<code>{\"features\": [30 numbers]}</code>",
             200,
         )
 
-    # POST: real prediction
+    # POST — real prediction
     data = request.get_json()
 
     if not data or "features" not in data:
@@ -28,13 +42,20 @@ def predict():
 
     features = data["features"]
 
-    # Expect exactly 30 numerical features
-    x = np.array(features).reshape(1, -1)
+    # Expect exactly 30 features
+    try:
+        x = np.array(features).reshape(1, -1)
+    except:
+        return jsonify({"error": "Features must be a list of 30 numerical values"}), 400
+
     proba = float(model.predict_proba(x)[0, 1])
 
     return jsonify({"malignant_probability": proba})
 
 
+# -----------------------
+#   Start the server
+# -----------------------
 if __name__ == "__main__":
-    # 0.0.0.0 so it works inside Docker
+    # host=0.0.0.0 is REQUIRED for Docker/Render!
     app.run(host="0.0.0.0", port=5000)
