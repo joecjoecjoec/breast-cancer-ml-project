@@ -241,7 +241,31 @@ Example output:
 
 
 
+## ☁️ Cloud Deployment (Render)
 
+The model is successfully deployed on Render using a Docker container.
+
+### ✅ Live API Endpoint
+
+You can access the deployed API here:
+
+👉 https://breast-cancer-ml-project.onrender.com  
+👉 https://breast-cancer-ml-project.onrender.com/predict
+
+### ✅ Example cURL Request
+
+```bash
+curl -X POST https://breast-cancer-ml-project.onrender.com/predict \
+  -H "Content-Type: application/json" \
+  -d '{"features": [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30]}'
+```
+
+### ✅ Example Response
+```bash
+{
+  "malignant_probability": 0.54
+}
+```
 
 ## ♻️ Reproducibility
 
