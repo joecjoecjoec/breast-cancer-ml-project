@@ -124,19 +124,23 @@ For evaluation and reproducibility, the dataset file breast-cancer.csv is alread
 
 ⸻
 
+## 🧩 Dependency & Environment Management
 
+This project uses a dedicated Python virtual environment to ensure full reproducibility and consistent execution across systems.
 
-## 📥 Installation
-
-It is recommended to use a virtual environment when running this project.
-
-### 📦 Virtual Environment (Recommended)
+### 🔹 Create a virtual environment
 
 ```bash
 python3 -m venv venv
-source venv/bin/activate        # Windows: venv\Scripts\activate
+source venv/bin/activate      # Windows: venv\Scripts\activate
+```
+
+### 📥  Install dependencies
+
+```bash
 pip install -r requirements.txt
 ```
+
 
 
 ## 📊 Exploratory Data Analysis (EDA)
@@ -207,10 +211,6 @@ After training the Random Forest model, feature importance values were extracted
 
 
 
-
-
-
-
 ## 🤖 Model Training Logic
 
 The model is trained in two stages:
@@ -276,6 +276,24 @@ The model is trained in two stages:
       - This file is later loaded by `predict.py` and `api.py` for inference.
 
 
+## 📝 Exporting Notebook to Script
+
+The Jupyter notebook (`Notebook.ipynb`) is used for exploratory data analysis (EDA),
+feature inspection, and trying different machine learning models.
+
+To make the training fully reproducible and suitable for automation, the final
+training pipeline was exported into a standalone Python script:
+
+**train.py**
+- loads the dataset  
+- applies the same preprocessing as in the notebook  
+- trains the final Random Forest model  
+- saves the model into `model_rf.bin`  
+
+This allows the model to be trained consistently across different environments,
+including Docker and cloud hosting.
+
+
 ## 🏋️‍♀️ Train the Model
 
 ```bash
@@ -289,17 +307,17 @@ python3 train.py
 python3 predict.py
 ```
 
-## 🐳 Deployment (Docker + Flask API)
+## 🐳 Containerization (Docker + Flask API)
 
 The model is deployed as a Flask web service running inside a Docker container.
 
-## 🛠️ Build the Container
+### 🛠️ Build the Container
 
 ```bash
 docker build -t breast-cancer-api .
 ```
 
-## 🚀 Run the API Service
+### 🚀 Run the API Service
 
 ```bash
 docker run -p 5001:5000 breast-cancer-api
