@@ -116,7 +116,87 @@ For evaluation and reproducibility, the dataset file breast-cancer.csv is alread
 
 ## 📥 Installation
 
+It is recommended to use a virtual environment when running this project.
+
+### 📦 Virtual Environment (Recommended)
+
+```bash
+python3 -m venv venv
+source venv/bin/activate        # Windows: venv\Scripts\activate
 pip install -r requirements.txt
+```
+
+
+## 📊 Exploratory Data Analysis (EDA)
+
+To better understand the dataset and identify patterns relevant to breast cancer diagnosis, several exploratory analyses were performed.
+
+Below is a summary of the key EDA findings.
+
+
+### 1. Class Distribution
+
+The dataset shows a **moderate imbalance** between the two classes:
+
+- **Benign (B)**: majority class  
+- **Malignant (M)**: minority class  
+
+📌 *This matters because imbalance can affect model performance.*
+
+![Class Distribution](image/class_distribution.png)
+
+
+### 2. Feature Distributions
+
+The 30 diagnostic features were visualized using histograms.
+
+**Key observations:**
+
+- Many features (e.g., radius, texture, area) show clearly different distributions for malignant vs benign tumors.
+- Malignant tumors typically have larger radius, perimeter, and area.
+- Some features are skewed and may benefit from scaling or normalization.
+
+![Distribution of radius_mean](image/radius_mean.png)
+![Distribution of area_mean](image/area_mean.png)
+
+Malignant tumors (1) generally exhibit higher radius_mean and area_mean values.
+
+---
+
+### 3. Correlation Heatmap
+
+A correlation heatmap was generated to identify relationships between features.
+
+![Correlation Analysis](image/correlation.png)
+
+**Important findings:**
+
+- Strong feature clusters exist (e.g., radius, perimeter, area).
+- High correlations suggest that tree-based models like Random Forest can use redundancy effectively.
+
+---
+
+### 4. Feature Importance
+
+After training the Random Forest model, feature importance values were extracted.
+
+**Top contributing features typically include:**
+
+- `radius_mean`
+- `perimeter_mean`
+- `concavity_mean`
+- `area_mean`
+- `concave_points_mean`
+
+📌 *These features are biologically meaningful and align with medical understanding.*
+
+![Feature Importance](image/feature_importance.png)
+
+
+
+
+
+
 
 
 ## 🤖 Model Training Logic
