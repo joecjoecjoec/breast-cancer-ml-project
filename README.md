@@ -26,7 +26,7 @@ The model and prediction pipeline can be executed directly on a local machine or
 ## 📂 Project Structure
 
 ```text
-breast-cancer-project/
+breast-cancer-ml-project/
 |
 ├── image/                      # EDA visualizations
 │   ├── area_mean.png
