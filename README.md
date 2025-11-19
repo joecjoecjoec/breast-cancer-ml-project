@@ -22,16 +22,28 @@ The model and prediction pipeline can be executed directly on a local machine or
 
 ⸻
 
-## 📌 Project Features
+## 📑 Table of Contents
 
-- 🔧 Data preprocessing  
-- 📊 Exploratory Data Analysis (EDA)  
-- 🤖 Training multiple models (Logistic Regression & Random Forest)  
-- 🔍 Hyperparameter tuning  
-- 🏆 Selecting and exporting the best-performing model  
-- 📁 Reproducible training script (train.py)  
-- 🔮 Prediction script (predict.py)  
-- 🐳 Docker container for running the model anywhere  
+- [🧪 Problem Description](#-problem-description)
+- [📂 Project Structure](#project-structure)
+- [📊 Dataset](#dataset)
+- [🧬 Dataset Features](#dataset-features)
+- [📥 Installation](#installation)
+  - [📦 Virtual Environment (Recommended)](#virtual-environment-recommended)
+- [📊 Exploratory Data Analysis (EDA)](#exploratory-data-analysis-eda)
+  - [1. Class Distribution](#1-class-distribution)
+  - [2. Feature Distributions](#2-feature-distributions)
+  - [3. Correlation Heatmap](#3-correlation-heatmap)
+  - [4. Feature Importance](#4-feature-importance)
+- [🤖 Model Training Logic](#model-training-logic)
+- [🏋️‍♀️ Train the Model](#train-the-model)
+- [🔮 Run Predictions](#run-predictions)
+- [🐳 Deployment (Docker + Flask API)](#deployment-docker--flask-api)
+  - [🛠️ Build the Container](#build-the-container)
+  - [🚀 Run the API Service](#run-the-api-service)
+  - [📤 Send a POST Request](#send-a-post-request)
+- [☁️ Cloud Deployment (Render)](#cloud-deployment-render)
+- [♻️ Reproducibility](#reproducibility)
 
 ⸻
 
@@ -283,11 +295,15 @@ The model is deployed as a Flask web service running inside a Docker container.
 
 ## 🛠️ Build the Container
 
+```bash
 docker build -t breast-cancer-api .
+```
 
 ## 🚀 Run the API Service
 
+```bash
 docker run -p 5001:5000 breast-cancer-api
+```
 
 If successful, the terminal will show something like:
 
@@ -313,15 +329,18 @@ To get predictions, you must send a POST request with JSON data (see below).
 
 Example using curl:
 
+```bash
 curl -X POST http://localhost:5001/predict \
-  -H "Content-Type: application/json" \
-  -d '{"features": [14.5,20.4,96.7,600.0,0.12,0.09,0.07,0.05,0.18,0.07,
-                    0.35,1.5,2.4,30.0,0.006,0.02,0.03,0.01,0.02,0.004,
-                    16.2,28.0,110.0,800.0,0.14,0.20,0.23,0.11,0.28,0.08]}'
+-H "Content-Type: application/json" \
+-d '{"features": [14.5,20.4,96.7,600.0,0.12,0.09,0.07,0.05,0.18,0.07,
+0.35,1.5,2.4,30.0,0.006,0.02,0.03,0.01,0.02,0.004,
+16.2,28.0,110.0,800.0,0.14,0.20,0.23,0.11,0.28,0.08]}'
+```
 
 Example output:
-
-{"malignant_probability": 0.18}      
+```json
+{"malignant_probability": 0.18}
+```    
 
 
 
