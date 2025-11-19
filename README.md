@@ -266,12 +266,16 @@ The model is trained in two stages:
 
 ## 🏋️‍♀️ Train the Model
 
+```bash
 python3 train.py
+```
 
 
 ## 🔮 Run Predictions
 
+```bash
 python3 predict.py
+```
 
 ## 🐳 Deployment (Docker + Flask API)
 
