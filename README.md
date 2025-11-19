@@ -22,43 +22,30 @@ The model and prediction pipeline can be executed directly on a local machine or
 
 ⸻
 
-## 📑 Table of Contents
-
-- [🧪 Problem Description](#-problem-description)
-- [📂 Project Structure](#project-structure)
-- [📊 Dataset](#dataset)
-- [🧬 Dataset Features](#dataset-features)
-- [📥 Installation](#installation)
-  - [📦 Virtual Environment (Recommended)](#virtual-environment-recommended)
-- [📊 Exploratory Data Analysis (EDA)](#exploratory-data-analysis-eda)
-  - [1. Class Distribution](#1-class-distribution)
-  - [2. Feature Distributions](#2-feature-distributions)
-  - [3. Correlation Heatmap](#3-correlation-heatmap)
-  - [4. Feature Importance](#4-feature-importance)
-- [🤖 Model Training Logic](#model-training-logic)
-- [🏋️‍♀️ Train the Model](#train-the-model)
-- [🔮 Run Predictions](#run-predictions)
-- [🐳 Deployment (Docker + Flask API)](#deployment-docker--flask-api)
-  - [🛠️ Build the Container](#build-the-container)
-  - [🚀 Run the API Service](#run-the-api-service)
-  - [📤 Send a POST Request](#send-a-post-request)
-- [☁️ Cloud Deployment (Render)](#cloud-deployment-render)
-- [♻️ Reproducibility](#reproducibility)
-
-⸻
 
 ## 📂 Project Structure
 
-```
+```text
 breast-cancer-project/
-│
-├── breast-cancer.csv        # dataset
-├── Notebook.ipynb           # EDA & model development
-├── train.py                 # training script (exports model_rf.bin)
-├── predict.py               # prediction script
-├── model_rf.bin             # final trained Random Forest model
-├── requirements.txt         # dependencies
-└── Dockerfile               # container setup
+|
+├── image/                      # EDA visualizations
+│   ├── area_mean.png
+│   ├── class_distribution.png
+│   ├── correlation.png
+│   ├── feature_importance.png
+│   └── radius_mean.png
+|
+├── api.py                      # Flask API used for Docker/Render deployment
+├── breast-cancer.csv           # dataset
+├── train.py                    # training script (produces model_rf.bin)
+├── predict.py                  # local prediction script
+├── model_rf.bin                # trained Random Forest model
+├── Notebook.ipynb              # EDA + model exploration notebook
+|
+├── requirements.txt            # dependency list
+├── Dockerfile                  # container build instructions
+├── .gitignore
+└── README.md
 ```
 ⸻
 
@@ -105,17 +92,24 @@ You can download the dataset in two ways:
 
 ### 🔹 Option 2: Download using Kaggle API (Recommended)
 
+
 If you have Kaggle API installed:
 
+```bash
 pip install kaggle
+```
 
 Login first (only needed once):
 
+```bash
 kaggle datasets download -d yasserh/breast-cancer-dataset
+```
 
 Then unzip: 
 
+```bash
 unzip breast-cancer-dataset.zip
+```
 
 
 ### 📌 Note
@@ -209,71 +203,96 @@ After training the Random Forest model, feature importance values were extracted
 ![Feature Importance](image/feature_importance.png)
 
 
-
-
 ## 🤖 Model Training Logic
 
-The model is trained in two stages:
+The training process has two main stages:
 
-1. **Exploration & Model Selection (in `Notebook.ipynb`)**
-   - Performed exploratory data analysis (EDA) to check:
-     - Class balance between **benign (B)** and **malignant (M)**.
-     - Distributions and ranges of the 30 numeric features.
-     - Correlations between features and with the target.
-   - Compared two model families:
-     - **Logistic Regression** (linear baseline).
-     - **Random Forest Classifier** (tree-based, non-linear).
-   - Evaluated models on a validation split using metrics such as:
-     - **Accuracy**
-     - **ROC–AUC**
-   - Random Forest slightly outperformed Logistic Regression on the validation set, so it was chosen as the final model family.
+1. Model exploration and selection in `Notebook.ipynb`
+2. Final training and model export in `train.py`
 
-2. **Final Training Script (`train.py`)**
 
-   The script `train.py` contains the minimal, reproducible training pipeline:
+### 1. Model exploration & selection (`Notebook.ipynb`)
 
-   1. **Load data**
-      ```python
-      df = pd.read_csv("breast-cancer.csv")
-      ```
+In the notebook, several experiments were performed to understand how different models behave on this dataset.
 
-   2. **Basic preprocessing**
-      - Normalize column names:
-        - lower-case all names  
-        - replace spaces and dashes with underscores
-      - Encode the target:
-        - `diagnosis` → `target` where  
-          - `M` → `1` (malignant)  
-          - `B` → `0` (benign)
-      - Drop non-informative identifiers:
-        - columns `id` and `diagnosis` are removed.
+**Models compared:**
 
-   3. **Define features and target**
-      ```python
-      X = df.drop(columns=["target"])
-      y = df["target"]
-      ```
+- Logistic Regression (linear baseline)
+- Random Forest Classifier (tree-based, non-linear)
 
-   4. **Train the final Random Forest model**
-      - Use the best hyperparameters found in the notebook:
-        ```python
-        model = RandomForestClassifier(
-            n_estimators=50,
-            max_depth=None,
-            min_samples_leaf=1,
-            random_state=42,
-            n_jobs=-1,
-        )
-        model.fit(X, y)
-        ```
+**Evaluation on the validation set used:**
 
-   5. **Save the trained model**
-      - The fitted model is serialized to `model_rf.bin` using `pickle`:
-        ```python
-        with open("model_rf.bin", "wb") as f:
-            pickle.dump(model, f)
-        ```
-      - This file is later loaded by `predict.py` and `api.py` for inference.
+- Accuracy
+- ROC–AUC
+- Feature importance (for tree-based models)
+
+**Result:**
+
+- Random Forest achieved slightly better performance than Logistic Regression on the validation set (higher ROC–AUC and accuracy).
+- Tree-based models also handle correlated features better and do not require feature scaling.
+
+➡️ Therefore, Random Forest was selected as the final model family, and its hyperparameters were tuned in the notebook (e.g. `n_estimators`, `max_depth`, `min_samples_leaf`).
+
+
+
+### 2. Final training pipeline (`train.py`)
+
+The file `train.py` contains a minimal, reproducible training pipeline.
+
+#### Step 1 – Load the data
+
+```python
+df = pd.read_csv("breast-cancer.csv")
+```
+
+#### Step 2 – Preprocess the data
+
+	•	Normalize column names:
+	•	convert to lowercase
+	•	replace spaces and dashes with underscores _
+	•	Encode the target:
+	•	diagnosis → target
+	•	M → 1 (malignant)
+	•	B → 0 (benign)
+	•	Drop non-informative columns:
+	•	id
+	•	diagnosis (original target column)
+
+#### Step 3 – Define features and target
+
+```python
+X = df.drop(columns=["target"])
+y = df["target"]
+```
+
+#### Step 4 – Train the final Random Forest model
+
+The final model uses the best hyperparameters found during notebook exploration:
+
+```python
+model = RandomForestClassifier(
+    n_estimators=50,
+    max_depth=None,
+    min_samples_leaf=1,
+    random_state=42,
+    n_jobs=-1,
+)
+model.fit(X, y)
+```
+
+#### Step 5 – Save the trained model
+
+The fitted model is serialized to model_rf.bin so it can be reused by other scripts:
+
+```python
+with open("model_rf.bin", "wb") as f:
+    pickle.dump(model, f)
+```
+
+This exported model is later loaded by:
+	•	predict.py for local batch predictions
+	•	api.py for the Flask API (Docker + cloud deployment)
+
 
 
 ## 📝 Exporting Notebook to Script
@@ -390,5 +409,16 @@ curl -X POST https://breast-cancer-ml-project.onrender.com/predict \
 
 ## ♻️ Reproducibility
 
-All required files are included so the entire pipeline can be executed by any reviewer without modification.
+This project is fully reproducible:
+
+- All analysis steps in `Notebook.ipynb` were exported into standalone Python scripts (`train.py`, `predict.py`).
+- A dedicated virtual environment is used to ensure consistent execution.
+- All dependencies are listed in `requirements.txt`.
+- Anyone can reproduce the results by:
+
+```bash
+python3 train.py
+python3 predict.py
+```
+- The Dockerfile allows consistent deployment across systems.
 
